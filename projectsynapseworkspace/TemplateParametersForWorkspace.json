@@ -8,6 +8,9 @@
 		"linkedservicetosqlserverdb_connectionString": {
 			"value": ""
 		},
+		"linkservicefhvdata_connectionString": {
+			"value": ""
+		},
 		"linkservicetosqlservervm_connectionString": {
 			"value": ""
 		},
