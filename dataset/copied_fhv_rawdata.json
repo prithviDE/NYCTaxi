@@ -1,5 +1,5 @@
 {
-	"name": "greentaxidata_lake",
+	"name": "copied_fhv_rawdata",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "projectdatalakestoragelinkedservice",

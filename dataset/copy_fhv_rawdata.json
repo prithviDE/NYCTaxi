@@ -1,0 +1,19 @@
+{
+	"name": "copy_fhv_rawdata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkservicefhvdata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "taxibusinessdata"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

@@ -1,9 +1,9 @@
 {
-	"name": "copy_yellowtaxi_data",
+	"name": "copy_greentaxi_data",
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_yellowtaxi_data",
+				"name": "LoadGreenTaxiData",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,14 +16,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
+						"type": "SqlServerSource",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
 					},
 					"enableStaging": false,
 					"translator": {
@@ -37,20 +43,20 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "yellowtaxi_data_raw",
+						"referenceName": "dst_tbl_onprem_greentaxi",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "dst_yellowtaxi_data",
+						"referenceName": "greentaxidata_lake",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2022-08-23T20:09:44Z"
+		"lastPublishTime": "2022-08-23T20:46:49Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }
