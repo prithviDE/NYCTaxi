@@ -332,7 +332,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "copy_yellowtaxi_data",
+						"name": "copy_yellowdata_lake",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -350,9 +350,15 @@
 								"partitionOption": "None"
 							},
 							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
 							},
 							"enableStaging": false,
 							"translator": {
@@ -366,14 +372,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "yellowtaxi_data_raw",
+								"referenceName": "copy_yellowtaxidata_raw",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "dst_yellowtaxi_data",
+								"referenceName": "load_yellowtaxidata_raw",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -384,12 +390,11 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-08-23T20:09:44Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/yellowtaxi_data_raw')]",
-				"[concat(variables('workspaceId'), '/datasets/dst_yellowtaxi_data')]"
+				"[concat(variables('workspaceId'), '/datasets/copy_yellowtaxidata_raw')]",
+				"[concat(variables('workspaceId'), '/datasets/load_yellowtaxidata_raw')]"
 			]
 		},
 		{
@@ -469,6 +474,27 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/linkservicefhvdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/copy_yellowtaxidata_raw')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedservicetosqlserverdb",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "YellowTaxiData"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/linkedservicetosqlserverdb')]"
 			]
 		},
 		{
@@ -711,6 +737,34 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/load_yellowtaxidata_raw')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "rawfilesdir",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/yellowtaxi_data_raw')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -742,12 +796,12 @@
 					"connectionString": "[parameters('linkedservicetosqlserverdb_connectionString')]"
 				},
 				"connectVia": {
-					"referenceName": "projectintegrationselfhosted",
+					"referenceName": "AutoResolveIntegrationRuntime",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/projectintegrationselfhosted')]"
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
