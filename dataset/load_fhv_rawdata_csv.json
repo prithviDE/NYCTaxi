@@ -1,0 +1,24 @@
+{
+	"name": "load_fhv_rawdata_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "projectdatalakestoragelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "fhvtaxis_201911.csv",
+				"folderPath": "rawfilesdir",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
