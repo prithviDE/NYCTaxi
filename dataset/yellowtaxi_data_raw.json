@@ -1,0 +1,16 @@
+{
+	"name": "yellowtaxi_data_raw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedservicetosqlserverdb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "YellowTaxiData"
+		}
+	}
+}
