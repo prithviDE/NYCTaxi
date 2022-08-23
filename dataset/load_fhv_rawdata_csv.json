@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "fhvtaxis_201911.csv",
 				"folderPath": "rawfilesdir",
 				"fileSystem": "projectdatalakestoragefilesystem"
 			},
