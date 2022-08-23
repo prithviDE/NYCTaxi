@@ -1,0 +1,17 @@
+{
+	"name": "linkservicetosqlservervm",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=vm1;initial catalog=NycTaxi",
+			"userName": "vm1\\dssadmin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxMGQyY2YwMy1jMDE1LTRmNmQtOTliMi02M2QxMDFjOWZmNjciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "projectintegrationselfhosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
