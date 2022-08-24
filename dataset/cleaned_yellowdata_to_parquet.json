@@ -2,7 +2,7 @@
 	"name": "cleaned_yellowdata_to_parquet",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "projectdatalakestoragelinkedservice",
+			"referenceName": "cleanedyellowdatalinkservc",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
