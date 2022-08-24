@@ -1,0 +1,104 @@
+{
+	"name": "AzureSynapseAnalyticsTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "projectsynapseworkspace-WorkspaceDefaultSqlServer",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "SQLPool1"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "VendorId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TransactionKey",
+				"type": "varchar"
+			},
+			{
+				"name": "PickupTime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "DropTime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "PassangerCount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TripDistance",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RateCodeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PickupLocationId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DropLocationId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PaymentTypeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TotalAmount",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TipAmount",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TripYear",
+				"type": "varchar"
+			},
+			{
+				"name": "TripMonth",
+				"type": "varchar"
+			},
+			{
+				"name": "TripDay",
+				"type": "varchar"
+			},
+			{
+				"name": "Fhv_flag",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FhvBusinessID",
+				"type": "varchar"
+			},
+			{
+				"name": "Fhv_BaseLicenceId",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Fact",
+			"table": "TripDetails"
+		}
+	}
+}

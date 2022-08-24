@@ -1,0 +1,20 @@
+{
+	"name": "load_transformed_greentaxidata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "cleanedgreentaxidatalinksrervc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "TransformedData/GreenTaxi",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

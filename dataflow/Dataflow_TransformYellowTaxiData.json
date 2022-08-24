@@ -1,0 +1,148 @@
+{
+	"name": "Dataflow_TransformYellowTaxiData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "cleaned_yellowdata_to_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "TransformYellowTaxiParquet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "load_transformed_greentaxidata",
+						"type": "DatasetReference"
+					},
+					"name": "LoadTransformedGreenTaxiData"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					},
+					"name": "LoadToDataLakeFactTripDetailsTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectrequiredcolumnstransformation"
+				},
+				{
+					"name": "AddTranscationGreentaxidata"
+				},
+				{
+					"name": "GenerateTransactionKey"
+				},
+				{
+					"name": "DeriveTripYearMonthDay"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TransformYellowTaxiParquet",
+				"TransformYellowTaxiParquet select(mapColumn(",
+				"          VendorID,",
+				"          lpep_pickup_datetime,",
+				"          lpep_dropoff_datetime,",
+				"          passenger_count,",
+				"          trip_distance,",
+				"          RatecodeID,",
+				"          PULocationID,",
+				"          DOLocationID,",
+				"          payment_type,",
+				"          tip_amount,",
+				"          total_amount",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectrequiredcolumnstransformation",
+				"GenerateTransactionKey derive(TransactionKey = concat(toString(TransactionKey),'grn')) ~> AddTranscationGreentaxidata",
+				"selectrequiredcolumnstransformation keyGenerate(output(TransactionKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> GenerateTransactionKey",
+				"AddTranscationGreentaxidata derive(tripday = dayOfMonth(toDate(lpep_pickup_datetime)),",
+				"          tripYear = year(toDate(lpep_pickup_datetime)),",
+				"          tripMonth = month(toDate(lpep_pickup_datetime))) ~> DeriveTripYearMonthDay",
+				"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          VendorID,",
+				"          PickupTime = lpep_pickup_datetime,",
+				"          DropTime = lpep_dropoff_datetime,",
+				"          PassangerCount = passenger_count,",
+				"          TripDistance = trip_distance,",
+				"          RateCodeId = RatecodeID,",
+				"          PickupLocationId = PULocationID,",
+				"          DropLocationId = DOLocationID,",
+				"          PaymentTypeId = payment_type,",
+				"          TipAmount = tip_amount,",
+				"          TotalAmount = total_amount,",
+				"          TransactionKey,",
+				"          TripDay = tripday,",
+				"          TripYear = tripYear,",
+				"          TripMonth = tripMonth",
+				"     )) ~> LoadTransformedGreenTaxiData",
+				"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          VendorId as integer,",
+				"          TransactionKey as string,",
+				"          PickupTime as timestamp,",
+				"          DropTime as timestamp,",
+				"          PassangerCount as integer,",
+				"          TripDistance as double,",
+				"          RateCodeId as integer,",
+				"          PickupLocationId as integer,",
+				"          DropLocationId as integer,",
+				"          PaymentTypeId as integer,",
+				"          TotalAmount as double,",
+				"          TipAmount as double,",
+				"          TripYear as string,",
+				"          TripMonth as string,",
+				"          TripDay as string,",
+				"          Fhv_flag as integer,",
+				"          FhvBusinessID as string,",
+				"          Fhv_BaseLicenceId as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          VendorId = VendorID,",
+				"          TransactionKey,",
+				"          PickupTime = lpep_pickup_datetime,",
+				"          DropTime = lpep_dropoff_datetime,",
+				"          PassangerCount = passenger_count,",
+				"          TripDistance = trip_distance,",
+				"          RateCodeId = RatecodeID,",
+				"          PickupLocationId = PULocationID,",
+				"          DropLocationId = DOLocationID,",
+				"          PaymentTypeId = payment_type,",
+				"          TotalAmount = total_amount,",
+				"          TipAmount = tip_amount,",
+				"          TripYear = tripYear,",
+				"          TripMonth = tripMonth,",
+				"          TripDay = tripday",
+				"     )) ~> LoadToDataLakeFactTripDetailsTable"
+			]
+		}
+	}
+}
