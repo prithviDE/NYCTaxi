@@ -1,0 +1,23 @@
+{
+	"name": "copy_taxizone_rawdata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkservicefhvdata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "TaxiZones",
+				"container": "taxibusinessdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

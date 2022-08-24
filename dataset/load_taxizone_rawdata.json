@@ -1,0 +1,23 @@
+{
+	"name": "load_taxizone_rawdata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "projectdatalakestoragelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "rawfilesdir/Taxizones",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
