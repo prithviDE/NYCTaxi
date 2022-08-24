@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "DELETE\n FROM [dbo].[RateCodes] WHERE [RateCodeID]=2\n\n select * FROM [dbo].[RateCodes]\n\n select * from [dbo].[Vendor]\n\n select * from Dim.Business",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool1",
+				"poolName": "SQLPool1"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
