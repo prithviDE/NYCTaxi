@@ -98,7 +98,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "copy_fhv_rawdata_csv",
+						"referenceName": "copy_fhv_rawdata_updated_csv",
 						"type": "DatasetReference"
 					}
 				],

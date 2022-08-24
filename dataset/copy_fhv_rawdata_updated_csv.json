@@ -1,0 +1,23 @@
+{
+	"name": "copy_fhv_rawdata_updated_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkservicefhvdata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Fhavtaxis11.csv",
+				"container": "taxibusinessdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
