@@ -78,6 +78,56 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/GreenTaxiCleansing')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dataflow_GreenTaxidata_Cleanse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_Cleanse_GreenTaxidata",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"cleangreentaxidata": {},
+									"CleanedGreenTaxidata": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Cleansing"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow_Cleanse_GreenTaxidata')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -150,13 +200,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Pipeline 2')]",
+			"name": "[concat(parameters('workspaceName'), '/TransformGreenTaxiData')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "LoadTransformedGreenTaxiData",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -169,12 +219,128 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Dataflow_GreenTaxidata_Cleanse",
+								"referenceName": "Dataflow_TransformGreenTaxiData",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"cleangreentaxidata": {},
-									"CleanedGreenTaxidata": {}
+									"TransformGreenTaxiParquet": {},
+									"LoadTransformedGreenTaxiData": {},
+									"LoadToDataLakeFactTripDetailsTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "projectsynapseworkspace-WorkspaceDefaultStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "projectdatalakestoragefilesystem/TransformedData/GreenTaxi"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Transformations"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow_TransformGreenTaxiData')]",
+				"[concat(variables('workspaceId'), '/linkedServices/projectsynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TransformYellowTaxiData')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "LoadTransformedYellowTaxiData",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_TransformYellowTaxiData",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TransformYellowTaxiParquet": {},
+									"LoadTransformedYellowTaxiData": {},
+									"LoadToDataLakeFactTripDetailsTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "projectsynapseworkspace-WorkspaceDefaultStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "projectdatalakestoragefilesystem/TransformedData/GreenTaxi"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Transformations"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow_TransformYellowTaxiData')]",
+				"[concat(variables('workspaceId'), '/linkedServices/projectsynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/YellowTaxiCleansing')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dataflow_YellowTaxidata_Cleanse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_Cleanse_YellowTaxidata",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"cleanyellowtaxidata": {},
+									"CleanedYellowTaxidata": {}
 								}
 							},
 							"staging": {},
@@ -191,13 +357,12 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "Transformation"
+					"name": "Cleansing"
 				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/Dataflow_GreenTaxidata_Cleanse')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow_Cleanse_YellowTaxidata')]"
 			]
 		},
 		{
@@ -569,6 +734,115 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSynapseAnalyticsTable1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectsynapseworkspace-WorkspaceDefaultSqlServer",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "SQLPool1"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "VendorId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TransactionKey",
+						"type": "varchar"
+					},
+					{
+						"name": "PickupTime",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "DropTime",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "PassangerCount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TripDistance",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RateCodeId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PickupLocationId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DropLocationId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PaymentTypeId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TotalAmount",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TipAmount",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TripYear",
+						"type": "varchar"
+					},
+					{
+						"name": "TripMonth",
+						"type": "varchar"
+					},
+					{
+						"name": "TripDay",
+						"type": "varchar"
+					},
+					{
+						"name": "Fhv_flag",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FhvBusinessID",
+						"type": "varchar"
+					},
+					{
+						"name": "Fhv_BaseLicenceId",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Fact",
+					"table": "TripDetails"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectsynapseworkspace-WorkspaceDefaultSqlServer')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Parquet_Green_Taxi_Data')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -824,6 +1098,59 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cleaned_yellowdata_to_parquet')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedyellowdatalinkservc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data/YellowTaxiParquet",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedyellowdatalinkservc')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cleaned_yellowtaxidata_lake')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedyellowdatalinkservc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data/YellowTaxiParquet",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedyellowdatalinkservc')]"
 			]
 		},
 		{
@@ -1155,7 +1482,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "Cleaned_Data/Fact",
+						"folderPath": "Cleaned_Data/GreenTaxiParquet",
 						"fileSystem": "projectdatalakestoragefilesystem"
 					},
 					"compressionCodec": "snappy"
@@ -1275,6 +1602,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/load_transformed_greentaxidata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedgreentaxidatalinksrervc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "TransformedData/GreenTaxi",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedgreentaxidatalinksrervc')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/load_transformed_yellowtaxidata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectsynapseworkspace-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "TransformedData/YellowTaxi",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectsynapseworkspace-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/load_yellowtaxidata_raw')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -1329,6 +1706,202 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/transform_greentaxi_parquet')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedgreentaxidatalinksrervc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data/GreenTaxiParquet",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "VendorID",
+						"type": "INT_16"
+					},
+					{
+						"name": "lpep_pickup_datetime",
+						"type": "UTF8"
+					},
+					{
+						"name": "lpep_dropoff_datetime",
+						"type": "UTF8"
+					},
+					{
+						"name": "passenger_count",
+						"type": "INT_16"
+					},
+					{
+						"name": "trip_distance",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "RatecodeID",
+						"type": "INT_16"
+					},
+					{
+						"name": "store_and_fwd_flag",
+						"type": "BOOLEAN"
+					},
+					{
+						"name": "PULocationID",
+						"type": "INT_16"
+					},
+					{
+						"name": "DOLocationID",
+						"type": "INT_16"
+					},
+					{
+						"name": "payment_type",
+						"type": "INT_16"
+					},
+					{
+						"name": "fare_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "extra",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "mta_tax",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "tip_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "tolls_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "improvement_surcharge",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "total_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "congestion_surcharge",
+						"type": "DOUBLE"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedgreentaxidatalinksrervc')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/transform_source_yellowdata_parquet')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedyellowdatalinkservc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data/YellowTaxiParquet",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "VendorID",
+						"type": "INT_16"
+					},
+					{
+						"name": "tpep_pickup_datetime",
+						"type": "UTF8"
+					},
+					{
+						"name": "tpep_dropoff_datetime",
+						"type": "UTF8"
+					},
+					{
+						"name": "passenger_count",
+						"type": "INT_16"
+					},
+					{
+						"name": "trip_distance",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "RatecodeID",
+						"type": "INT_16"
+					},
+					{
+						"name": "store_and_fwd_flag",
+						"type": "BOOLEAN"
+					},
+					{
+						"name": "PULocationID",
+						"type": "INT_16"
+					},
+					{
+						"name": "DOLocationID",
+						"type": "INT_16"
+					},
+					{
+						"name": "payment_type",
+						"type": "INT_16"
+					},
+					{
+						"name": "fare_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "extra",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "mta_tax",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "tip_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "tolls_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "improvement_surcharge",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "total_amount",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "congestion_surcharge",
+						"type": "DOUBLE"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedyellowdatalinkservc')]"
 			]
 		},
 		{
@@ -1575,7 +2148,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Dataflow_GreenTaxidata_Cleanse')]",
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_Cleanse_GreenTaxidata')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -1607,9 +2180,6 @@
 							"name": "filterVendor"
 						},
 						{
-							"name": "castpassengercountint"
-						},
-						{
 							"name": "filterAmountTip"
 						},
 						{
@@ -1618,43 +2188,34 @@
 					],
 					"scriptLines": [
 						"source(output(",
-						"          VendorID as string,",
+						"          VendorID as short,",
 						"          lpep_pickup_datetime as string,",
 						"          lpep_dropoff_datetime as string,",
-						"          passenger_count as string,",
-						"          trip_distance as string,",
-						"          RatecodeID as string,",
-						"          store_and_fwd_flag as string,",
-						"          PULocationID as string,",
-						"          DOLocationID as string,",
-						"          payment_type as string,",
-						"          fare_amount as string,",
-						"          extra as string,",
-						"          mta_tax as string,",
-						"          tip_amount as string,",
-						"          tolls_amount as string,",
-						"          improvement_surcharge as string,",
-						"          total_amount as string,",
-						"          congestion_surcharge as string",
+						"          passenger_count as short,",
+						"          trip_distance as double,",
+						"          RatecodeID as short,",
+						"          store_and_fwd_flag as boolean,",
+						"          PULocationID as short,",
+						"          DOLocationID as short,",
+						"          payment_type as short,",
+						"          fare_amount as double,",
+						"          extra as double,",
+						"          mta_tax as double,",
+						"          tip_amount as double,",
+						"          tolls_amount as double,",
+						"          improvement_surcharge as double,",
+						"          total_amount as double,",
+						"          congestion_surcharge as double",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     limit: 1000,",
 						"     ignoreNoFilesFound: false) ~> cleangreentaxidata",
-						"castpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
+						"cleangreentaxidata filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
 						"passengercountgreentaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
-						"cleangreentaxidata cast(output(",
-						"          lpep_pickup_datetime as date,",
-						"          lpep_dropoff_datetime as date,",
-						"          passenger_count as integer,",
-						"          tip_amount as float,",
-						"          total_amount as float",
-						"     ),",
-						"     errors: true) ~> castpassengercountint",
 						"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
-						"filterAmountTip filter(and(lpep_pickup_datetime>=toDate('2019-11-01'),lpep_pickup_datetime<=toDate('2019-11-30'))\r",
+						"filterAmountTip filter(and(lpep_pickup_datetime>='2019-11-01',lpep_pickup_datetime<='2019-11-30')\r",
 						"&& \r",
-						"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDrop",
+						"and(lpep_dropoff_datetime>='2019-11-01',lpep_dropoff_datetime<='2019-11-30')) ~> filterPickupDrop",
 						"filterPickupDrop sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
@@ -1672,7 +2233,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Dataflow_YellowTaxidata_Cleanse')]",
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_Cleanse_YellowTaxidata')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -1689,9 +2250,9 @@
 					],
 					"sinks": [
 						{
-							"linkedService": {
-								"referenceName": "cleanedyellowdatalinkservc",
-								"type": "LinkedServiceReference"
+							"dataset": {
+								"referenceName": "cleaned_yellowdata_to_parquet",
+								"type": "DatasetReference"
 							},
 							"name": "CleanedYellowTaxidata"
 						}
@@ -1701,73 +2262,411 @@
 							"name": "passengercountyellowtaxidata"
 						},
 						{
-							"name": "filterVendorYellow"
+							"name": "filterVendor"
 						},
 						{
-							"name": "castyellowpassengercountint"
+							"name": "filterAmountTip"
 						},
 						{
-							"name": "filterAmountTipYellow"
-						},
-						{
-							"name": "filterPickupDropYellow"
+							"name": "filterPickupDrop"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          VendorID as string,",
+						"          VendorID as short,",
 						"          tpep_pickup_datetime as string,",
 						"          tpep_dropoff_datetime as string,",
-						"          passenger_count as string,",
-						"          trip_distance as string,",
-						"          RatecodeID as string,",
-						"          store_and_fwd_flag as string,",
-						"          PULocationID as string,",
-						"          DOLocationID as string,",
-						"          payment_type as string,",
-						"          fare_amount as string,",
-						"          extra as string,",
-						"          mta_tax as string,",
-						"          tip_amount as string,",
-						"          tolls_amount as string,",
-						"          improvement_surcharge as string,",
-						"          total_amount as string,",
-						"          congestion_surcharge as string",
+						"          passenger_count as short,",
+						"          trip_distance as double,",
+						"          RatecodeID as short,",
+						"          store_and_fwd_flag as boolean,",
+						"          PULocationID as short,",
+						"          DOLocationID as short,",
+						"          payment_type as short,",
+						"          fare_amount as double,",
+						"          extra as double,",
+						"          mta_tax as double,",
+						"          tip_amount as double,",
+						"          tolls_amount as double,",
+						"          improvement_surcharge as double,",
+						"          total_amount as double,",
+						"          congestion_surcharge as double",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     limit: 1000,",
 						"     ignoreNoFilesFound: false) ~> cleanyellowtaxidata",
-						"castyellowpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountyellowtaxidata",
-						"passengercountyellowtaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendorYellow",
-						"cleanyellowtaxidata cast(output(",
-						"          tpep_pickup_datetime as date,",
-						"          tpep_dropoff_datetime as date,",
-						"          passenger_count as integer,",
-						"          tip_amount as float,",
-						"          total_amount as float",
-						"     ),",
-						"     errors: true) ~> castyellowpassengercountint",
-						"filterVendorYellow filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTipYellow",
-						"filterAmountTipYellow filter(and(tpep_pickup_datetime>=toDate('2019-11-01'),tpep_pickup_datetime<=toDate('2019-11-30'))\r",
+						"cleanyellowtaxidata filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountyellowtaxidata",
+						"passengercountyellowtaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
+						"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
+						"filterAmountTip filter(and(tpep_pickup_datetime>='2019-11-01',tpep_pickup_datetime<='2019-11-30')\r",
 						"&& \r",
-						"and(tpep_dropoff_datetime>=toDate('2019-11-01'),tpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDropYellow",
-						"filterPickupDropYellow sink(allowSchemaDrift: true,",
+						"and(tpep_dropoff_datetime>='2019-11-01',tpep_dropoff_datetime<='2019-11-30')) ~> filterPickupDrop",
+						"filterPickupDrop sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     fileSystem: 'projectdatalakestoragefilesystem',",
-						"     folderPath: 'Cleaned_Data',",
-						"     umask: 0022,",
+						"     umask: 0222,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> CleanedYellowTaxidata"
+						"     skipDuplicateMapOutputs: true,",
+						"     format: 'parquet') ~> CleanedYellowTaxidata"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/clean_yellowtaxi_data')]",
-				"[concat(variables('workspaceId'), '/linkedServices/cleanedyellowdatalinkservc')]"
+				"[concat(variables('workspaceId'), '/datasets/cleaned_yellowdata_to_parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_TransformGreenTaxiData')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "transform_greentaxi_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "TransformGreenTaxiParquet"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "load_transformed_greentaxidata",
+								"type": "DatasetReference"
+							},
+							"name": "LoadTransformedGreenTaxiData"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference"
+							},
+							"name": "LoadToDataLakeFactTripDetailsTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectrequiredcolumnstransformation"
+						},
+						{
+							"name": "AddTranscationGreentaxidata"
+						},
+						{
+							"name": "GenerateTransactionKey"
+						},
+						{
+							"name": "DeriveTripYearMonthDay"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorID as short,",
+						"          lpep_pickup_datetime as timestamp,",
+						"          lpep_dropoff_datetime as timestamp,",
+						"          passenger_count as short,",
+						"          trip_distance as double,",
+						"          RatecodeID as short,",
+						"          store_and_fwd_flag as boolean,",
+						"          PULocationID as short,",
+						"          DOLocationID as short,",
+						"          payment_type as short,",
+						"          fare_amount as double,",
+						"          extra as double,",
+						"          mta_tax as double,",
+						"          tip_amount as double,",
+						"          tolls_amount as double,",
+						"          improvement_surcharge as double,",
+						"          total_amount as double,",
+						"          congestion_surcharge as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> TransformGreenTaxiParquet",
+						"TransformGreenTaxiParquet select(mapColumn(",
+						"          VendorID,",
+						"          lpep_pickup_datetime,",
+						"          lpep_dropoff_datetime,",
+						"          passenger_count,",
+						"          trip_distance,",
+						"          RatecodeID,",
+						"          PULocationID,",
+						"          DOLocationID,",
+						"          payment_type,",
+						"          tip_amount,",
+						"          total_amount",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectrequiredcolumnstransformation",
+						"GenerateTransactionKey derive(TransactionKey = concat(toString(TransactionKey),'grn')) ~> AddTranscationGreentaxidata",
+						"selectrequiredcolumnstransformation keyGenerate(output(TransactionKey as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> GenerateTransactionKey",
+						"AddTranscationGreentaxidata derive(tripday = dayOfMonth(toDate(lpep_pickup_datetime)),",
+						"          tripYear = year(toDate(lpep_pickup_datetime)),",
+						"          tripMonth = month(toDate(lpep_pickup_datetime))) ~> DeriveTripYearMonthDay",
+						"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          VendorID,",
+						"          PickupTime = lpep_pickup_datetime,",
+						"          DropTime = lpep_dropoff_datetime,",
+						"          PassangerCount = passenger_count,",
+						"          TripDistance = trip_distance,",
+						"          RateCodeId = RatecodeID,",
+						"          PickupLocationId = PULocationID,",
+						"          DropLocationId = DOLocationID,",
+						"          PaymentTypeId = payment_type,",
+						"          TipAmount = tip_amount,",
+						"          TotalAmount = total_amount,",
+						"          TransactionKey,",
+						"          TripDay = tripday,",
+						"          TripYear = tripYear,",
+						"          TripMonth = tripMonth",
+						"     )) ~> LoadTransformedGreenTaxiData",
+						"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          VendorId as integer,",
+						"          TransactionKey as string,",
+						"          PickupTime as timestamp,",
+						"          DropTime as timestamp,",
+						"          PassangerCount as integer,",
+						"          TripDistance as double,",
+						"          RateCodeId as integer,",
+						"          PickupLocationId as integer,",
+						"          DropLocationId as integer,",
+						"          PaymentTypeId as integer,",
+						"          TotalAmount as double,",
+						"          TipAmount as double,",
+						"          TripYear as string,",
+						"          TripMonth as string,",
+						"          TripDay as string,",
+						"          Fhv_flag as integer,",
+						"          FhvBusinessID as string,",
+						"          Fhv_BaseLicenceId as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          VendorId = VendorID,",
+						"          TransactionKey,",
+						"          PickupTime = lpep_pickup_datetime,",
+						"          DropTime = lpep_dropoff_datetime,",
+						"          PassangerCount = passenger_count,",
+						"          TripDistance = trip_distance,",
+						"          RateCodeId = RatecodeID,",
+						"          PickupLocationId = PULocationID,",
+						"          DropLocationId = DOLocationID,",
+						"          PaymentTypeId = payment_type,",
+						"          TotalAmount = total_amount,",
+						"          TipAmount = tip_amount,",
+						"          TripYear = tripYear,",
+						"          TripMonth = tripMonth,",
+						"          TripDay = tripday",
+						"     )) ~> LoadToDataLakeFactTripDetailsTable"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/transform_greentaxi_parquet')]",
+				"[concat(variables('workspaceId'), '/datasets/load_transformed_greentaxidata')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSynapseAnalyticsTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_TransformYellowTaxiData')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "transform_source_yellowdata_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "TransformYellowTaxiParquet"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "load_transformed_yellowtaxidata",
+								"type": "DatasetReference"
+							},
+							"name": "LoadTransformedYellowTaxiData"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference"
+							},
+							"name": "LoadToDataLakeFactTripDetailsTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectrequiredcolumnstransformation"
+						},
+						{
+							"name": "AddTranscationYellowtaxidata"
+						},
+						{
+							"name": "GenerateTransactionKey"
+						},
+						{
+							"name": "DeriveTripYearMonthDay"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorID as short,",
+						"          tpep_pickup_datetime as timestamp,",
+						"          tpep_dropoff_datetime as timestamp,",
+						"          passenger_count as short,",
+						"          trip_distance as double,",
+						"          RatecodeID as short,",
+						"          store_and_fwd_flag as boolean,",
+						"          PULocationID as short,",
+						"          DOLocationID as short,",
+						"          payment_type as short,",
+						"          fare_amount as double,",
+						"          extra as double,",
+						"          mta_tax as double,",
+						"          tip_amount as double,",
+						"          tolls_amount as double,",
+						"          improvement_surcharge as double,",
+						"          total_amount as double,",
+						"          congestion_surcharge as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> TransformYellowTaxiParquet",
+						"TransformYellowTaxiParquet select(mapColumn(",
+						"          VendorID,",
+						"          tpep_pickup_datetime,",
+						"          tpep_dropoff_datetime,",
+						"          passenger_count,",
+						"          trip_distance,",
+						"          RatecodeID,",
+						"          PULocationID,",
+						"          DOLocationID,",
+						"          payment_type,",
+						"          tip_amount,",
+						"          total_amount",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectrequiredcolumnstransformation",
+						"GenerateTransactionKey derive(TransactionKey = concat(toString(TransactionKey),'yllw')) ~> AddTranscationYellowtaxidata",
+						"selectrequiredcolumnstransformation keyGenerate(output(TransactionKey as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> GenerateTransactionKey",
+						"AddTranscationYellowtaxidata derive(tripday = dayOfMonth(toDate(tpep_pickup_datetime)),",
+						"          tripYear = year(toDate(tpep_pickup_datetime)),",
+						"          tripMonth = month(toDate(tpep_pickup_datetime))) ~> DeriveTripYearMonthDay",
+						"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          VendorID,",
+						"          PickupTime = tpep_pickup_datetime,",
+						"          DropTime = tpep_dropoff_datetime,",
+						"          PassangerCount = passenger_count,",
+						"          TripDistance = trip_distance,",
+						"          RateCodeId = RatecodeID,",
+						"          PickupLocationId = PULocationID,",
+						"          DropLocationId = DOLocationID,",
+						"          PaymentTypeId = payment_type,",
+						"          TipAmount = tip_amount,",
+						"          TotalAmount = total_amount,",
+						"          TransactionKey,",
+						"          TripDay = tripday,",
+						"          TripYear = tripYear,",
+						"          TripMonth = tripMonth",
+						"     )) ~> LoadTransformedYellowTaxiData",
+						"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          VendorId as integer,",
+						"          TransactionKey as string,",
+						"          PickupTime as timestamp,",
+						"          DropTime as timestamp,",
+						"          PassangerCount as integer,",
+						"          TripDistance as double,",
+						"          RateCodeId as integer,",
+						"          PickupLocationId as integer,",
+						"          DropLocationId as integer,",
+						"          PaymentTypeId as integer,",
+						"          TotalAmount as double,",
+						"          TipAmount as double,",
+						"          TripYear as string,",
+						"          TripMonth as string,",
+						"          TripDay as string,",
+						"          Fhv_flag as integer,",
+						"          FhvBusinessID as string,",
+						"          Fhv_BaseLicenceId as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          VendorId = VendorID,",
+						"          TransactionKey,",
+						"          PickupTime = tpep_pickup_datetime,",
+						"          DropTime = tpep_dropoff_datetime,",
+						"          PassangerCount = passenger_count,",
+						"          TripDistance = trip_distance,",
+						"          RateCodeId = RatecodeID,",
+						"          PickupLocationId = PULocationID,",
+						"          DropLocationId = DOLocationID,",
+						"          PaymentTypeId = payment_type,",
+						"          TotalAmount = total_amount,",
+						"          TipAmount = tip_amount,",
+						"          TripYear = tripYear,",
+						"          TripMonth = tripMonth,",
+						"          TripDay = tripday",
+						"     )) ~> LoadToDataLakeFactTripDetailsTable"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/transform_source_yellowdata_parquet')]",
+				"[concat(variables('workspaceId'), '/datasets/load_transformed_yellowtaxidata')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSynapseAnalyticsTable1')]"
 			]
 		},
 		{
@@ -1807,6 +2706,26 @@
 			"properties": {
 				"content": {
 					"query": "DELETE\n FROM [dbo].[RateCodes] WHERE [RateCodeID]=2\n\n select * FROM [dbo].[RateCodes]\n\n select * from [dbo].[Vendor]\n\n select * from Dim.Business",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool1",
+						"poolName": "SQLPool1"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP (100) [VendorId]\n,[TransactionKey]\n,[PickupTime]\n,[DropTime]\n,[PassangerCount]\n,[TripDistance]\n,[RateCodeId]\n,[PickupLocationId]\n,[DropLocationId]\n,[PaymentTypeId]\n,[TotalAmount]\n,[TipAmount]\n,[TripYear]\n,[TripMonth]\n,[TripDay]\n,[Fhv_flag]\n,[FhvBusinessID]\n,[Fhv_BaseLicenceId]\n FROM [Fact].[TripDetails]",
 					"metadata": {
 						"language": "sql"
 					},
