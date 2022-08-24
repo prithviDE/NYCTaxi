@@ -1,48 +1,48 @@
 {
-	"name": "Dataflow_GreenTaxidata_Cleanse",
+	"name": "Dataflow_YellowTaxidata_Cleanse",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "clean_greentaxidata",
+						"referenceName": "clean_yellowtaxi_data",
 						"type": "DatasetReference"
 					},
-					"name": "cleangreentaxidata"
+					"name": "cleanyellowtaxidata"
 				}
 			],
 			"sinks": [
 				{
 					"linkedService": {
-						"referenceName": "cleanedgreentaxidatalinksrervc",
+						"referenceName": "cleanedyellowdatalinkservc",
 						"type": "LinkedServiceReference"
 					},
-					"name": "CleanedGreenTaxidata"
+					"name": "CleanedYellowTaxidata"
 				}
 			],
 			"transformations": [
 				{
-					"name": "passengercountgreentaxidata"
+					"name": "passengercountyellowtaxidata"
 				},
 				{
-					"name": "filterVendor"
+					"name": "filterVendorYellow"
 				},
 				{
-					"name": "castpassengercountint"
+					"name": "castyellowpassengercountint"
 				},
 				{
-					"name": "filterAmountTip"
+					"name": "filterAmountTipYellow"
 				},
 				{
-					"name": "filterPickupDrop"
+					"name": "filterPickupDropYellow"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
 				"          VendorID as string,",
-				"          lpep_pickup_datetime as string,",
-				"          lpep_dropoff_datetime as string,",
+				"          tpep_pickup_datetime as string,",
+				"          tpep_dropoff_datetime as string,",
 				"          passenger_count as string,",
 				"          trip_distance as string,",
 				"          RatecodeID as string,",
@@ -62,22 +62,22 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     limit: 1000,",
-				"     ignoreNoFilesFound: false) ~> cleangreentaxidata",
-				"castpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
-				"passengercountgreentaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
-				"cleangreentaxidata cast(output(",
-				"          lpep_pickup_datetime as date,",
-				"          lpep_dropoff_datetime as date,",
+				"     ignoreNoFilesFound: false) ~> cleanyellowtaxidata",
+				"castyellowpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountyellowtaxidata",
+				"passengercountyellowtaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendorYellow",
+				"cleanyellowtaxidata cast(output(",
+				"          tpep_pickup_datetime as date,",
+				"          tpep_dropoff_datetime as date,",
 				"          passenger_count as integer,",
 				"          tip_amount as float,",
 				"          total_amount as float",
 				"     ),",
-				"     errors: true) ~> castpassengercountint",
-				"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
-				"filterAmountTip filter(and(lpep_pickup_datetime>=toDate('2019-11-01'),lpep_pickup_datetime<=toDate('2019-11-30'))\r",
+				"     errors: true) ~> castyellowpassengercountint",
+				"filterVendorYellow filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTipYellow",
+				"filterAmountTipYellow filter(and(tpep_pickup_datetime>=toDate('2019-11-01'),tpep_pickup_datetime<=toDate('2019-11-30'))\r",
 				"&& \r",
-				"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDrop",
-				"filterPickupDrop sink(allowSchemaDrift: true,",
+				"and(tpep_dropoff_datetime>=toDate('2019-11-01'),tpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDropYellow",
+				"filterPickupDropYellow sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     fileSystem: 'projectdatalakestoragefilesystem',",
@@ -86,7 +86,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> CleanedGreenTaxidata"
+				"     skipDuplicateMapOutputs: true) ~> CleanedYellowTaxidata"
 			]
 		}
 	}
