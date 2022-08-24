@@ -224,7 +224,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "copy_fhv_rawdata_csv",
+								"referenceName": "copy_fhv_rawdata_updated_csv",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -248,7 +248,7 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/copy_fhv_rawdata')]",
 				"[concat(variables('workspaceId'), '/datasets/load_fhv_rawdata')]",
-				"[concat(variables('workspaceId'), '/datasets/copy_fhv_rawdata_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/copy_fhv_rawdata_updated_csv')]",
 				"[concat(variables('workspaceId'), '/datasets/load_fhv_rawdata_csv')]"
 			]
 		},
@@ -463,6 +463,34 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "fhvtaxis_201911.csv",
+						"container": "taxibusinessdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/linkservicefhvdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/copy_fhv_rawdata_updated_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkservicefhvdata",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Fhavtaxis11.csv",
 						"container": "taxibusinessdata"
 					},
 					"columnDelimiter": ",",
