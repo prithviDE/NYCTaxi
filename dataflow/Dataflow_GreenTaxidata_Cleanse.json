@@ -1,23 +1,76 @@
 {
-	"name": "Dataflow1",
+	"name": "Dataflow_GreenTaxidata_Cleanse",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "transform_greentaxi_data",
+						"referenceName": "clean_greentaxidata",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "cleangreentaxidata"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "passengercountgreentaxidata"
+				},
+				{
+					"name": "filterVendor"
+				},
+				{
+					"name": "castpassengercountint"
+				},
+				{
+					"name": "filterAmountTip"
+				},
+				{
+					"name": "filterPickupDrop"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          VendorID as string,",
+				"          lpep_pickup_datetime as string,",
+				"          lpep_dropoff_datetime as string,",
+				"          passenger_count as string,",
+				"          trip_distance as string,",
+				"          RatecodeID as string,",
+				"          store_and_fwd_flag as string,",
+				"          PULocationID as string,",
+				"          DOLocationID as string,",
+				"          payment_type as string,",
+				"          fare_amount as string,",
+				"          extra as string,",
+				"          mta_tax as string,",
+				"          tip_amount as string,",
+				"          tolls_amount as string,",
+				"          improvement_surcharge as string,",
+				"          total_amount as string,",
+				"          congestion_surcharge as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1"
+				"     limit: 1000,",
+				"     ignoreNoFilesFound: false) ~> cleangreentaxidata",
+				"castpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
+				"passengercountgreentaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
+				"cleangreentaxidata cast(output(",
+				"          lpep_pickup_datetime as date,",
+				"          lpep_dropoff_datetime as date,",
+				"          passenger_count as integer,",
+				"          tip_amount as float,",
+				"          total_amount as float",
+				"     ),",
+				"     errors: true) ~> castpassengercountint",
+				"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
+				"filterAmountTip filter(and(lpep_pickup_datetime>=toDate('2019-11-01'),lpep_pickup_datetime<=toDate('2019-11-30'))\r",
+				"&& \r",
+				"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))\r",
+				"\r",
+				") ~> filterPickupDrop"
 			]
 		}
 	}
