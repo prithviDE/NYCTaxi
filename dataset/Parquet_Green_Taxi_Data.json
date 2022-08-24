@@ -1,0 +1,20 @@
+{
+	"name": "Parquet_Green_Taxi_Data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "projectdatalakestoragelinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Cleaned_Data",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

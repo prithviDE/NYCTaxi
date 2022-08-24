@@ -12,7 +12,15 @@
 					"name": "cleangreentaxidata"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "cleanedgreendatalinkservc",
+						"type": "LinkedServiceReference"
+					},
+					"name": "CleanedGreenTaxidata"
+				}
+			],
 			"transformations": [
 				{
 					"name": "passengercountgreentaxidata"
@@ -68,9 +76,14 @@
 				"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
 				"filterAmountTip filter(and(lpep_pickup_datetime>=toDate('2019-11-01'),lpep_pickup_datetime<=toDate('2019-11-30'))\r",
 				"&& \r",
-				"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))\r",
-				"\r",
-				") ~> filterPickupDrop"
+				"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDrop",
+				"filterPickupDrop sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     container: 'projectdatalakestoragefilesystem',",
+				"     folderPath: 'Cleaned_Data',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> CleanedGreenTaxidata"
 			]
 		}
 	}
