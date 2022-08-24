@@ -1,0 +1,93 @@
+{
+	"name": "transform_greentaxi_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "cleanedgreentaxidatalinksrervc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Cleaned_Data/GreenTaxiParquet",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "VendorID",
+				"type": "INT_16"
+			},
+			{
+				"name": "lpep_pickup_datetime",
+				"type": "UTF8"
+			},
+			{
+				"name": "lpep_dropoff_datetime",
+				"type": "UTF8"
+			},
+			{
+				"name": "passenger_count",
+				"type": "INT_16"
+			},
+			{
+				"name": "trip_distance",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "RatecodeID",
+				"type": "INT_16"
+			},
+			{
+				"name": "store_and_fwd_flag",
+				"type": "BOOLEAN"
+			},
+			{
+				"name": "PULocationID",
+				"type": "INT_16"
+			},
+			{
+				"name": "DOLocationID",
+				"type": "INT_16"
+			},
+			{
+				"name": "payment_type",
+				"type": "INT_16"
+			},
+			{
+				"name": "fare_amount",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "extra",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "mta_tax",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "tip_amount",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "tolls_amount",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "improvement_surcharge",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "total_amount",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "congestion_surcharge",
+				"type": "DOUBLE"
+			}
+		]
+	}
+}

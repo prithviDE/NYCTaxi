@@ -1,9 +1,9 @@
 {
-	"name": "GreenTaxiCleansing",
+	"name": "TransformYellowTaxiData",
 	"properties": {
 		"activities": [
 			{
-				"name": "Dataflow_GreenTaxidata_Cleanse",
+				"name": "LoadTransformedYellowTaxiData",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,8 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Dataflow_Cleanse_GreenTaxidata",
+						"referenceName": "Dataflow_TransformYellowTaxiData",
 						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "projectsynapseworkspace-WorkspaceDefaultStorage",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "projectdatalakestoragefilesystem/TransformedData/GreenTaxi"
 					},
 					"compute": {
 						"coreCount": 8,
@@ -28,7 +35,7 @@
 			}
 		],
 		"folder": {
-			"name": "Cleansing"
+			"name": "Transformations"
 		},
 		"annotations": []
 	}

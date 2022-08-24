@@ -1,0 +1,169 @@
+{
+	"name": "Dataflow_TransformYellowTaxiData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "transform_source_yellowdata_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "TransformYellowTaxiParquet"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "load_transformed_yellowtaxidata",
+						"type": "DatasetReference"
+					},
+					"name": "LoadTransformedYellowTaxiData"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					},
+					"name": "LoadToDataLakeFactTripDetailsTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectrequiredcolumnstransformation"
+				},
+				{
+					"name": "AddTranscationYellowtaxidata"
+				},
+				{
+					"name": "GenerateTransactionKey"
+				},
+				{
+					"name": "DeriveTripYearMonthDay"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          VendorID as short,",
+				"          tpep_pickup_datetime as timestamp,",
+				"          tpep_dropoff_datetime as timestamp,",
+				"          passenger_count as short,",
+				"          trip_distance as double,",
+				"          RatecodeID as short,",
+				"          store_and_fwd_flag as boolean,",
+				"          PULocationID as short,",
+				"          DOLocationID as short,",
+				"          payment_type as short,",
+				"          fare_amount as double,",
+				"          extra as double,",
+				"          mta_tax as double,",
+				"          tip_amount as double,",
+				"          tolls_amount as double,",
+				"          improvement_surcharge as double,",
+				"          total_amount as double,",
+				"          congestion_surcharge as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> TransformYellowTaxiParquet",
+				"TransformYellowTaxiParquet select(mapColumn(",
+				"          VendorID,",
+				"          tpep_pickup_datetime,",
+				"          tpep_dropoff_datetime,",
+				"          passenger_count,",
+				"          trip_distance,",
+				"          RatecodeID,",
+				"          PULocationID,",
+				"          DOLocationID,",
+				"          payment_type,",
+				"          tip_amount,",
+				"          total_amount",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectrequiredcolumnstransformation",
+				"GenerateTransactionKey derive(TransactionKey = concat(toString(TransactionKey),'yllw')) ~> AddTranscationYellowtaxidata",
+				"selectrequiredcolumnstransformation keyGenerate(output(TransactionKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> GenerateTransactionKey",
+				"AddTranscationYellowtaxidata derive(tripday = dayOfMonth(toDate(tpep_pickup_datetime)),",
+				"          tripYear = year(toDate(tpep_pickup_datetime)),",
+				"          tripMonth = month(toDate(tpep_pickup_datetime))) ~> DeriveTripYearMonthDay",
+				"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          VendorID,",
+				"          PickupTime = tpep_pickup_datetime,",
+				"          DropTime = tpep_dropoff_datetime,",
+				"          PassangerCount = passenger_count,",
+				"          TripDistance = trip_distance,",
+				"          RateCodeId = RatecodeID,",
+				"          PickupLocationId = PULocationID,",
+				"          DropLocationId = DOLocationID,",
+				"          PaymentTypeId = payment_type,",
+				"          TipAmount = tip_amount,",
+				"          TotalAmount = total_amount,",
+				"          TransactionKey,",
+				"          TripDay = tripday,",
+				"          TripYear = tripYear,",
+				"          TripMonth = tripMonth",
+				"     )) ~> LoadTransformedYellowTaxiData",
+				"DeriveTripYearMonthDay sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          VendorId as integer,",
+				"          TransactionKey as string,",
+				"          PickupTime as timestamp,",
+				"          DropTime as timestamp,",
+				"          PassangerCount as integer,",
+				"          TripDistance as double,",
+				"          RateCodeId as integer,",
+				"          PickupLocationId as integer,",
+				"          DropLocationId as integer,",
+				"          PaymentTypeId as integer,",
+				"          TotalAmount as double,",
+				"          TipAmount as double,",
+				"          TripYear as string,",
+				"          TripMonth as string,",
+				"          TripDay as string,",
+				"          Fhv_flag as integer,",
+				"          FhvBusinessID as string,",
+				"          Fhv_BaseLicenceId as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          VendorId = VendorID,",
+				"          TransactionKey,",
+				"          PickupTime = tpep_pickup_datetime,",
+				"          DropTime = tpep_dropoff_datetime,",
+				"          PassangerCount = passenger_count,",
+				"          TripDistance = trip_distance,",
+				"          RateCodeId = RatecodeID,",
+				"          PickupLocationId = PULocationID,",
+				"          DropLocationId = DOLocationID,",
+				"          PaymentTypeId = payment_type,",
+				"          TotalAmount = total_amount,",
+				"          TipAmount = tip_amount,",
+				"          TripYear = tripYear,",
+				"          TripMonth = tripMonth,",
+				"          TripDay = tripday",
+				"     )) ~> LoadToDataLakeFactTripDetailsTable"
+			]
+		}
+	}
+}

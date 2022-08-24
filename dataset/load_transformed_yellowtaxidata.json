@@ -1,8 +1,8 @@
 {
-	"name": "greendata_clean_parquet",
+	"name": "load_transformed_yellowtaxidata",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "cleanedgreentaxidatalinksrervc",
+			"referenceName": "projectsynapseworkspace-WorkspaceDefaultStorage",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "Cleaned_Data/GreenTaxiParquet",
+				"folderPath": "TransformedData/YellowTaxi",
 				"fileSystem": "projectdatalakestoragefilesystem"
 			},
 			"compressionCodec": "snappy"

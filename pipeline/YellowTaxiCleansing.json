@@ -1,9 +1,9 @@
 {
-	"name": "GreenTaxiCleansing",
+	"name": "YellowTaxiCleansing",
 	"properties": {
 		"activities": [
 			{
-				"name": "Dataflow_GreenTaxidata_Cleanse",
+				"name": "Dataflow_YellowTaxidata_Cleanse",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Dataflow_Cleanse_GreenTaxidata",
+						"referenceName": "Dataflow_Cleanse_YellowTaxidata",
 						"type": "DataFlowReference"
 					},
 					"compute": {

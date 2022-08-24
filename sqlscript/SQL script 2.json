@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [VendorId]\n,[TransactionKey]\n,[PickupTime]\n,[DropTime]\n,[PassangerCount]\n,[TripDistance]\n,[RateCodeId]\n,[PickupLocationId]\n,[DropLocationId]\n,[PaymentTypeId]\n,[TotalAmount]\n,[TipAmount]\n,[TripYear]\n,[TripMonth]\n,[TripDay]\n,[Fhv_flag]\n,[FhvBusinessID]\n,[Fhv_BaseLicenceId]\n FROM [Fact].[TripDetails]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SQLPool1",
+				"poolName": "SQLPool1"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

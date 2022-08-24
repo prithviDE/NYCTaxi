@@ -1,29 +1,29 @@
 {
-	"name": "Dataflow_Cleanse_GreenTaxidata",
+	"name": "Dataflow_Cleanse_YellowTaxidata",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "clean_greentaxidata",
+						"referenceName": "clean_yellowtaxi_data",
 						"type": "DatasetReference"
 					},
-					"name": "cleangreentaxidata"
+					"name": "cleanyellowtaxidata"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "greendata_clean_parquet",
+						"referenceName": "cleaned_yellowdata_to_parquet",
 						"type": "DatasetReference"
 					},
-					"name": "CleanedGreenTaxidata"
+					"name": "CleanedYellowTaxidata"
 				}
 			],
 			"transformations": [
 				{
-					"name": "passengercountgreentaxidata"
+					"name": "passengercountyellowtaxidata"
 				},
 				{
 					"name": "filterVendor"
@@ -38,8 +38,8 @@
 			"scriptLines": [
 				"source(output(",
 				"          VendorID as short,",
-				"          lpep_pickup_datetime as string,",
-				"          lpep_dropoff_datetime as string,",
+				"          tpep_pickup_datetime as string,",
+				"          tpep_dropoff_datetime as string,",
 				"          passenger_count as short,",
 				"          trip_distance as double,",
 				"          RatecodeID as short,",
@@ -58,21 +58,21 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> cleangreentaxidata",
-				"cleangreentaxidata filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
-				"passengercountgreentaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
+				"     ignoreNoFilesFound: false) ~> cleanyellowtaxidata",
+				"cleanyellowtaxidata filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountyellowtaxidata",
+				"passengercountyellowtaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
 				"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
-				"filterAmountTip filter(and(lpep_pickup_datetime>='2019-11-01',lpep_pickup_datetime<='2019-11-30')\r",
+				"filterAmountTip filter(and(tpep_pickup_datetime>='2019-11-01',tpep_pickup_datetime<='2019-11-30')\r",
 				"&& \r",
-				"and(lpep_dropoff_datetime>='2019-11-01',lpep_dropoff_datetime<='2019-11-30')) ~> filterPickupDrop",
+				"and(tpep_dropoff_datetime>='2019-11-01',tpep_dropoff_datetime<='2019-11-30')) ~> filterPickupDrop",
 				"filterPickupDrop sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
 				"     umask: 0222,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> CleanedGreenTaxidata"
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'parquet') ~> CleanedYellowTaxidata"
 			]
 		}
 	}

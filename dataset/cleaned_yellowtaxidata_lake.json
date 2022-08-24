@@ -1,8 +1,8 @@
 {
-	"name": "greendata_clean_parquet",
+	"name": "cleaned_yellowtaxidata_lake",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "cleanedgreentaxidatalinksrervc",
+			"referenceName": "cleanedyellowdatalinkservc",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "Cleaned_Data/GreenTaxiParquet",
+				"folderPath": "Cleaned_Data/YellowTaxiParquet",
 				"fileSystem": "projectdatalakestoragefilesystem"
 			},
 			"compressionCodec": "snappy"
