@@ -5,6 +5,15 @@
 		"workspaceName": {
 			"value": "projectsynapseworkspace"
 		},
+		"cleanedgreendatalinkservc_connectionString": {
+			"value": ""
+		},
+		"cleanedgreentaxidatalinksrervc_accountKey": {
+			"value": ""
+		},
+		"cleanedyellowdatalinkservc_accountKey": {
+			"value": ""
+		},
 		"linkedservicetosqlserverdb_connectionString": {
 			"value": ""
 		},
@@ -22,6 +31,12 @@
 		},
 		"projectsynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
+		},
+		"cleanedgreentaxidatalinksrervc_properties_typeProperties_url": {
+			"value": "https://dssadmin.dfs.core.windows.net/"
+		},
+		"cleanedyellowdatalinkservc_properties_typeProperties_url": {
+			"value": "https://dssadmin.dfs.core.windows.net/"
 		},
 		"linkservicetosqlservervm_properties_typeProperties_userName": {
 			"value": "vm1\\dssadmin"

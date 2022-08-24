@@ -7,6 +7,18 @@
 			"metadata": "Workspace name",
 			"defaultValue": "projectsynapseworkspace"
 		},
+		"cleanedgreendatalinkservc_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'cleanedgreendatalinkservc'"
+		},
+		"cleanedgreentaxidatalinksrervc_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'cleanedgreentaxidatalinksrervc'"
+		},
+		"cleanedyellowdatalinkservc_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'cleanedyellowdatalinkservc'"
+		},
 		"linkedservicetosqlserverdb_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedservicetosqlserverdb'"
@@ -30,6 +42,14 @@
 		"projectsynapseworkspace-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'projectsynapseworkspace-WorkspaceDefaultSqlServer'"
+		},
+		"cleanedgreentaxidatalinksrervc_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dssadmin.dfs.core.windows.net/"
+		},
+		"cleanedyellowdatalinkservc_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dssadmin.dfs.core.windows.net/"
 		},
 		"linkservicetosqlservervm_properties_typeProperties_userName": {
 			"type": "string",
@@ -127,6 +147,57 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/dst_tbl_onprem_greentaxi')]",
 				"[concat(variables('workspaceId'), '/datasets/greentaxidata_lake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 2')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_GreenTaxidata_Cleanse",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"cleangreentaxidata": {},
+									"CleanedGreenTaxidata": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Transformation"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow_GreenTaxidata_Cleanse')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -251,6 +322,9 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Ingest Data"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-08-23T20:46:47Z"
 			},
@@ -325,6 +399,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ingest Data"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-08-23T20:46:49Z"
@@ -406,6 +483,9 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Ingest Data"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -478,11 +558,272 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Ingest Data"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/copy_yellowtaxidata_raw')]",
 				"[concat(variables('workspaceId'), '/datasets/load_yellowtaxidata_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_Green_Taxi_Data')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/clean_greentaxi_rawdata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.GreenTaxiData.txt",
+						"folderPath": "rawfilesdir",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/clean_greentaxidata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.GreenTaxiData.txt",
+						"folderPath": "rawfilesdir",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "VendorID",
+						"type": "String"
+					},
+					{
+						"name": "lpep_pickup_datetime",
+						"type": "String"
+					},
+					{
+						"name": "lpep_dropoff_datetime",
+						"type": "String"
+					},
+					{
+						"name": "passenger_count",
+						"type": "String"
+					},
+					{
+						"name": "trip_distance",
+						"type": "String"
+					},
+					{
+						"name": "RatecodeID",
+						"type": "String"
+					},
+					{
+						"name": "store_and_fwd_flag",
+						"type": "String"
+					},
+					{
+						"name": "PULocationID",
+						"type": "String"
+					},
+					{
+						"name": "DOLocationID",
+						"type": "String"
+					},
+					{
+						"name": "payment_type",
+						"type": "String"
+					},
+					{
+						"name": "fare_amount",
+						"type": "String"
+					},
+					{
+						"name": "extra",
+						"type": "String"
+					},
+					{
+						"name": "mta_tax",
+						"type": "String"
+					},
+					{
+						"name": "tip_amount",
+						"type": "String"
+					},
+					{
+						"name": "tolls_amount",
+						"type": "String"
+					},
+					{
+						"name": "improvement_surcharge",
+						"type": "String"
+					},
+					{
+						"name": "total_amount",
+						"type": "String"
+					},
+					{
+						"name": "congestion_surcharge",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/clean_yellowtaxi_data')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.YellowTaxiData.txt",
+						"folderPath": "rawfilesdir",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "VendorID",
+						"type": "String"
+					},
+					{
+						"name": "tpep_pickup_datetime",
+						"type": "String"
+					},
+					{
+						"name": "tpep_dropoff_datetime",
+						"type": "String"
+					},
+					{
+						"name": "passenger_count",
+						"type": "String"
+					},
+					{
+						"name": "trip_distance",
+						"type": "String"
+					},
+					{
+						"name": "RatecodeID",
+						"type": "String"
+					},
+					{
+						"name": "store_and_fwd_flag",
+						"type": "String"
+					},
+					{
+						"name": "PULocationID",
+						"type": "String"
+					},
+					{
+						"name": "DOLocationID",
+						"type": "String"
+					},
+					{
+						"name": "payment_type",
+						"type": "String"
+					},
+					{
+						"name": "fare_amount",
+						"type": "String"
+					},
+					{
+						"name": "extra",
+						"type": "String"
+					},
+					{
+						"name": "mta_tax",
+						"type": "String"
+					},
+					{
+						"name": "tip_amount",
+						"type": "String"
+					},
+					{
+						"name": "tolls_amount",
+						"type": "String"
+					},
+					{
+						"name": "improvement_surcharge",
+						"type": "String"
+					},
+					{
+						"name": "total_amount",
+						"type": "String"
+					},
+					{
+						"name": "congestion_surcharge",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
 			]
 		},
 		{
@@ -801,6 +1142,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/greendata_clean_parquet')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "cleanedgreentaxidatalinksrervc",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Cleaned_Data/Fact",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedgreentaxidatalinksrervc')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/greentaxidata_lake')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -937,6 +1303,35 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/transform_greentaxi_data')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "projectdatalakestoragelinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.GreenTaxiData.txt",
+						"folderPath": "rawfilesdir",
+						"fileSystem": "projectdatalakestoragefilesystem"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/projectdatalakestoragelinkedservice')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/yellowtaxi_data_raw')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -955,6 +1350,71 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/linkedservicetosqlserverdb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cleanedgreendatalinkservc')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('cleanedgreendatalinkservc_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cleanedgreentaxidatalinksrervc')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('cleanedgreentaxidatalinksrervc_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('cleanedgreentaxidatalinksrervc_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cleanedyellowdatalinkservc')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('cleanedyellowdatalinkservc_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('cleanedyellowdatalinkservc_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -1115,6 +1575,202 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_GreenTaxidata_Cleanse')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "clean_greentaxidata",
+								"type": "DatasetReference"
+							},
+							"name": "cleangreentaxidata"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "greendata_clean_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "CleanedGreenTaxidata"
+						}
+					],
+					"transformations": [
+						{
+							"name": "passengercountgreentaxidata"
+						},
+						{
+							"name": "filterVendor"
+						},
+						{
+							"name": "castpassengercountint"
+						},
+						{
+							"name": "filterAmountTip"
+						},
+						{
+							"name": "filterPickupDrop"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorID as string,",
+						"          lpep_pickup_datetime as string,",
+						"          lpep_dropoff_datetime as string,",
+						"          passenger_count as string,",
+						"          trip_distance as string,",
+						"          RatecodeID as string,",
+						"          store_and_fwd_flag as string,",
+						"          PULocationID as string,",
+						"          DOLocationID as string,",
+						"          payment_type as string,",
+						"          fare_amount as string,",
+						"          extra as string,",
+						"          mta_tax as string,",
+						"          tip_amount as string,",
+						"          tolls_amount as string,",
+						"          improvement_surcharge as string,",
+						"          total_amount as string,",
+						"          congestion_surcharge as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     limit: 1000,",
+						"     ignoreNoFilesFound: false) ~> cleangreentaxidata",
+						"castpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountgreentaxidata",
+						"passengercountgreentaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendor",
+						"cleangreentaxidata cast(output(",
+						"          lpep_pickup_datetime as date,",
+						"          lpep_dropoff_datetime as date,",
+						"          passenger_count as integer,",
+						"          tip_amount as float,",
+						"          total_amount as float",
+						"     ),",
+						"     errors: true) ~> castpassengercountint",
+						"filterVendor filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTip",
+						"filterAmountTip filter(and(lpep_pickup_datetime>=toDate('2019-11-01'),lpep_pickup_datetime<=toDate('2019-11-30'))\r",
+						"&& \r",
+						"and(lpep_dropoff_datetime>=toDate('2019-11-01'),lpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDrop",
+						"filterPickupDrop sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0222,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> CleanedGreenTaxidata"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/clean_greentaxidata')]",
+				"[concat(variables('workspaceId'), '/datasets/greendata_clean_parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_YellowTaxidata_Cleanse')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "clean_yellowtaxi_data",
+								"type": "DatasetReference"
+							},
+							"name": "cleanyellowtaxidata"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "cleanedyellowdatalinkservc",
+								"type": "LinkedServiceReference"
+							},
+							"name": "CleanedYellowTaxidata"
+						}
+					],
+					"transformations": [
+						{
+							"name": "passengercountyellowtaxidata"
+						},
+						{
+							"name": "filterVendorYellow"
+						},
+						{
+							"name": "castyellowpassengercountint"
+						},
+						{
+							"name": "filterAmountTipYellow"
+						},
+						{
+							"name": "filterPickupDropYellow"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          VendorID as string,",
+						"          tpep_pickup_datetime as string,",
+						"          tpep_dropoff_datetime as string,",
+						"          passenger_count as string,",
+						"          trip_distance as string,",
+						"          RatecodeID as string,",
+						"          store_and_fwd_flag as string,",
+						"          PULocationID as string,",
+						"          DOLocationID as string,",
+						"          payment_type as string,",
+						"          fare_amount as string,",
+						"          extra as string,",
+						"          mta_tax as string,",
+						"          tip_amount as string,",
+						"          tolls_amount as string,",
+						"          improvement_surcharge as string,",
+						"          total_amount as string,",
+						"          congestion_surcharge as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     limit: 1000,",
+						"     ignoreNoFilesFound: false) ~> cleanyellowtaxidata",
+						"castyellowpassengercountint filter(and(passenger_count>=1,passenger_count<=5)) ~> passengercountyellowtaxidata",
+						"passengercountyellowtaxidata filter(!(isNull(VendorID)||isNull(payment_type)||isNull(RatecodeID))) ~> filterVendorYellow",
+						"cleanyellowtaxidata cast(output(",
+						"          tpep_pickup_datetime as date,",
+						"          tpep_dropoff_datetime as date,",
+						"          passenger_count as integer,",
+						"          tip_amount as float,",
+						"          total_amount as float",
+						"     ),",
+						"     errors: true) ~> castyellowpassengercountint",
+						"filterVendorYellow filter(and(total_amount>0,tip_amount>=0)) ~> filterAmountTipYellow",
+						"filterAmountTipYellow filter(and(tpep_pickup_datetime>=toDate('2019-11-01'),tpep_pickup_datetime<=toDate('2019-11-30'))\r",
+						"&& \r",
+						"and(tpep_dropoff_datetime>=toDate('2019-11-01'),tpep_dropoff_datetime<=toDate('2019-11-30'))) ~> filterPickupDropYellow",
+						"filterPickupDropYellow sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     fileSystem: 'projectdatalakestoragefilesystem',",
+						"     folderPath: 'Cleaned_Data',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> CleanedYellowTaxidata"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/clean_yellowtaxi_data')]",
+				"[concat(variables('workspaceId'), '/linkedServices/cleanedyellowdatalinkservc')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
@@ -1130,7 +1786,27 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "Create Schema Dim\n\nCreate Schema Fact \n\nCREATE TABLE Dim.TaxiZones\n\t(\n\t [LocationID] bigint,\n\t [Borough] nvarchar(400),\n\t [Zone] nvarchar(400),\n\t [service_zone] nvarchar(400)\n\t)\n\tWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t)\n\nGO\n\nCREATE TABLE [Dim].[PaymentType] \n\n( \n\nPaymentID INT NOT NULL,\n\nPaymentType NVARCHAR(20)\n) \n\nWITH \n( \n    DISTRIBUTION = Replicate,\n    CLUSTERED COLUMNSTORE INDEX\n)\n\n\nCreate Table Dim.FHvBases\n(\n    BaseLicenseId Varchar(50),\n    BaseType Varchar(50),\n    AddressBuilding Varchar(100),\n    AddressStreet Varchar(100),\n    AddressCity Varchar(100),\n    AddressState Varchar(100), \n    AddressPostalCode Varchar(10)\n)\n\n\n\n---Alter table with BaseLicenseId\nCREATE TABLE [Fact].[TripDetails]\n(\n\t[VendorId] [int] NULL,\n\t[TransactionKey] [varchar](50) NULL,\n\t[PickupTime] [datetime2](7) NULL,\n\t[DropTime] [datetime2](7) NULL,\n\t[PassangerCount] [int] NULL,\n\t[TripDistance] [float] NULL,\n\t[RateCodeId] [int] NULL,\n\t[PickupLocationId] [int] NULL,\n\t[DropLocationId] [int] NULL,\n\t[PaymentTypeId] [int] NULL,\n\t[TotalAmount] [float] NULL,\n\t[TipAmount] [float] NULL,\n\t[TripYear] [varchar](4) NULL,\n\t[TripMonth] [varchar](2) NULL,\n\t[TripDay] [varchar](2) NULL,\n\t[Fhv_flag] [int] NULL,\n\t[FhvBusinessID] [varchar](10) NULL,\n\t[Fhv_BaseLicenceId] [Varchar](50) null\n)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tCLUSTERED COLUMNSTORE INDEX\n)\n\nCREATE TABLE RateCodes\n(\n\tRateCodeId INT,\n\tRateCode VARCHAR(100),\n\tIsApproved BIT\n)\n\n\nCREATE TABLE [dbo].[Vendor](\n\t[VendorID] [int] NULL,\n\t[Vendor_name] [nvarchar](50) NULL\n)\n\nCREATE TABLE Dim.Business\n(\n\tBusinessId nvarchar(10) Not Null,\n\tBusiness_Type nvarchar(20)\n\n)\nWITH(DISTRIBUTION = REPLICATE,\n\tHEAP)\n\n\nINSERT INTO RateCodes (RateCodeId, RateCode, IsApproved)\nVALUES\n(1, 'Standard Rate', 1),\n(2, 'JFK', 1),\n(3, 'Newark', 1),\n(4, 'Westchester', 0),\n(5, 'Negotiated fare', 1),\n(6, 'GroupRide', 1)\n\n\n\nINSERT INTO Vendor VALUES(1,'Creative Mobile Technologies,LLC'),\n(2,'VeriFone Inc')\n\n\nINSERT INTO BUSINESS VALUES('HV0002','Juno'),\n('HV0003','Uber'),\n('HV0004', 'Via'),\n('HV0005', 'Lyft')\n\n\n\n\n\n\n/****** Object:  StoredProcedure [dbo].[bulk_load_TaxiZones]    Script Date: 24-08-2022 15:27:27 ******/\nSET ANSI_NULLS ON\nGO\n\nSET QUOTED_IDENTIFIER ON\nGO\n\nALTER PROC [dbo].[bulk_load_TaxiZones] AS\nBEGIN\n\nIF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'TaxiZones' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE Dim.TaxiZones\n\t(\n\t [LocationID] bigint,\n\t [Borough] nvarchar(400),\n\t [Zone] nvarchar(400),\n\t [service_zone] nvarchar(400)\n\t)\nWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t -- HEAP\n\t)\n\nELSE\n\tTRUNCATE TABLE Dim.TaxiZones\n\n--Uncomment the 4 lines below to create a stored procedure for data pipeline orchestration​\n--CREATE PROC bulk_load_TaxiZones\n--AS\n--BEGIN\nCOPY INTO DIM.TaxiZones\n(LocationID 1, Borough 2, Zone 3, service_zone 4)\nFROM 'https://dssavdprojdatalake.dfs.core.windows.net/taxidataraw/TaxiZones'\nWITH\n(\n\tFILE_TYPE = 'CSV'\n\t,MAXERRORS = 10\n\t,FIRSTROW = 2\n\t,ERRORFILE = 'https://dssavdprojdatalake.dfs.core.windows.net/taxidataraw/Errors/'\n)\nEND\nGO\n\n\n\n\n",
+					"query": "Create Schema Dim\n\nCreate Schema Fact \n\nCREATE TABLE Dim.TaxiZones\n\t(\n\t [LocationID] bigint,\n\t [Borough] nvarchar(400),\n\t [Zone] nvarchar(400),\n\t [service_zone] nvarchar(400)\n\t)\n\tWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t)\n\nGO\n\nCREATE TABLE [Dim].[PaymentType] \n\n( \n\nPaymentID INT NOT NULL,\n\nPaymentType NVARCHAR(20)\n) \n\nWITH \n( \n    DISTRIBUTION = Replicate,\n    CLUSTERED COLUMNSTORE INDEX\n)\n\n\nCreate Table Dim.FHvBases\n(\n    BaseLicenseId Varchar(50),\n    BaseType Varchar(50),\n    AddressBuilding Varchar(100),\n    AddressStreet Varchar(100),\n    AddressCity Varchar(100),\n    AddressState Varchar(100), \n    AddressPostalCode Varchar(10)\n)\n\n\n\n---Alter table with BaseLicenseId\nCREATE TABLE [Fact].[TripDetails]\n(\n\t[VendorId] [int] NULL,\n\t[TransactionKey] [varchar](50) NULL,\n\t[PickupTime] [datetime2](7) NULL,\n\t[DropTime] [datetime2](7) NULL,\n\t[PassangerCount] [int] NULL,\n\t[TripDistance] [float] NULL,\n\t[RateCodeId] [int] NULL,\n\t[PickupLocationId] [int] NULL,\n\t[DropLocationId] [int] NULL,\n\t[PaymentTypeId] [int] NULL,\n\t[TotalAmount] [float] NULL,\n\t[TipAmount] [float] NULL,\n\t[TripYear] [varchar](4) NULL,\n\t[TripMonth] [varchar](2) NULL,\n\t[TripDay] [varchar](2) NULL,\n\t[Fhv_flag] [int] NULL,\n\t[FhvBusinessID] [varchar](10) NULL,\n\t[Fhv_BaseLicenceId] [Varchar](50) null\n)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tCLUSTERED COLUMNSTORE INDEX\n)\n\nCREATE TABLE RateCodes\n(\n\tRateCodeId INT,\n\tRateCode VARCHAR(100),\n\tIsApproved BIT\n)\n\n\nCREATE TABLE [dbo].[Vendor](\n\t[VendorID] [int] NULL,\n\t[Vendor_name] [nvarchar](50) NULL\n)\n\nCREATE TABLE Dim.Business\n(\n\tBusinessId nvarchar(10) Not Null,\n\tBusiness_Type nvarchar(20)\n\n)\nWITH(DISTRIBUTION = REPLICATE,\n\tHEAP)\n\n\nINSERT INTO RateCodes (RateCodeId, RateCode, IsApproved) \nVALUES \n(1, 'Standard Rate', 1),\n(2, 'JFK', 1),\n(3, 'Newark', 1),\n(4, 'Westchester', 0),\n(5, 'Negotiated fare', 1),\n(6, 'GroupRide', 1)\n\nINSERT INTO Vendor VALUES \n(1,'Creative Mobile Technologies,LLC')\n, (2,'VeriFone Inc')\n\n\nINSERT INTO Dim.Business VALUES \n('HV0002','Juno'),\n('HV0003','Uber'),\n('HV0004', 'Via'),\n('HV0005', 'Lyft')\n\n\n\n/****** Object:  StoredProcedure [dbo].[bulk_load_TaxiZones]    Script Date: 24-08-2022 15:27:27 ******/\nSET ANSI_NULLS ON\nGO\n\nSET QUOTED_IDENTIFIER ON\nGO\n\nALTER PROC [dbo].[bulk_load_TaxiZones] AS\nBEGIN\n\nIF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'TaxiZones' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE Dim.TaxiZones\n\t(\n\t [LocationID] bigint,\n\t [Borough] nvarchar(400),\n\t [Zone] nvarchar(400),\n\t [service_zone] nvarchar(400)\n\t)\nWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t -- HEAP\n\t)\n\nELSE\n\tTRUNCATE TABLE Dim.TaxiZones\n\n--Uncomment the 4 lines below to create a stored procedure for data pipeline orchestration​\n--CREATE PROC bulk_load_TaxiZones\n--AS\n--BEGIN\nCOPY INTO DIM.TaxiZones\n(LocationID 1, Borough 2, Zone 3, service_zone 4)\nFROM 'https://dssavdprojdatalake.dfs.core.windows.net/taxidataraw/TaxiZones'\nWITH\n(\n\tFILE_TYPE = 'CSV'\n\t,MAXERRORS = 10\n\t,FIRSTROW = 2\n\t,ERRORFILE = 'https://dssavdprojdatalake.dfs.core.windows.net/taxidataraw/Errors/'\n)\nEND\nGO\n\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SQLPool1",
+						"poolName": "SQLPool1"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "DELETE\n FROM [dbo].[RateCodes] WHERE [RateCodeID]=2\n\n select * FROM [dbo].[RateCodes]\n\n select * from [dbo].[Vendor]\n\n select * from Dim.Business",
 					"metadata": {
 						"language": "sql"
 					},
