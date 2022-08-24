@@ -15,6 +15,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"staging": {
+						"linkedService": {
+							"referenceName": "cleanedgreentaxidatalinksrervc",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "projectdatalakestoragefilesystem/Cleaned_Data"
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

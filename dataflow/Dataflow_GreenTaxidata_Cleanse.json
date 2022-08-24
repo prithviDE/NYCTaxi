@@ -82,7 +82,7 @@
 				"     format: 'parquet',",
 				"     fileSystem: 'projectdatalakestoragefilesystem',",
 				"     folderPath: 'Cleaned_Data',",
-				"     umask: 0022,",
+				"     umask: 0222,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
