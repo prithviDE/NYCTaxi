@@ -20,11 +20,7 @@
 						"type": "DataFlowReference"
 					},
 					"staging": {
-						"linkedService": {
-							"referenceName": "cleanedgreentaxidatalinksrervc",
-							"type": "LinkedServiceReference"
-						},
-						"folderPath": "projectdatalakestoragefilesystem/Cleaned_Data"
+						"folderPath": ""
 					},
 					"compute": {
 						"coreCount": 8,

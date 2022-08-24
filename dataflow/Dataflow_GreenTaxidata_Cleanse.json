@@ -14,9 +14,9 @@
 			],
 			"sinks": [
 				{
-					"linkedService": {
-						"referenceName": "cleanedgreentaxidatalinksrervc",
-						"type": "LinkedServiceReference"
+					"dataset": {
+						"referenceName": "greendata_clean_parquet",
+						"type": "DatasetReference"
 					},
 					"name": "CleanedGreenTaxidata"
 				}
@@ -80,8 +80,6 @@
 				"filterPickupDrop sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
-				"     fileSystem: 'projectdatalakestoragefilesystem',",
-				"     folderPath: 'Cleaned_Data',",
 				"     umask: 0222,",
 				"     preCommands: [],",
 				"     postCommands: [],",
