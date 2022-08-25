@@ -1,0 +1,185 @@
+{
+	"name": "Flatten_FHV_JSON",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkPool1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "2525acc0-f653-4737-bfdd-9e4c7a7a1809"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/6da2ea48-1481-4f1f-8899-793d416da3d7/resourceGroups/Project/providers/Microsoft.Synapse/workspaces/projectsynapseworkspace/bigDataPools/SparkPool1",
+				"name": "SparkPool1",
+				"type": "Spark",
+				"endpoint": "https://projectsynapseworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"fhvBasesDF = (\r\n",
+					"\r\n",
+					"                spark\r\n",
+					"\r\n",
+					"                  .read\r\n",
+					"\r\n",
+					"                  .option(\"multiline\", \"true\")\r\n",
+					"\r\n",
+					"                  .json('abfss://projectdatalakestoragefilesystem@dssadmin.dfs.core.windows.net/rawfilesdir/FhvBases.json')\r\n",
+					"\r\n",
+					"             )\r\n",
+					"\r\n",
+					"\r\n",
+					"\r\n",
+					"display(fhvBasesDF)"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"import pyspark.sql.functions as F\r\n",
+					"col=F.col\r\n",
+					"fhvBasesFlatDF = (\r\n",
+					"\r\n",
+					"                    fhvBasesDF\r\n",
+					"\r\n",
+					"                        .select(\r\n",
+					"\r\n",
+					"                                    col(\"License Number\").alias(\"BaseLicenseId\"),\r\n",
+					"\r\n",
+					"                                    col(\"Type of Base\").alias(\"BaseType\"),\r\n",
+					"\r\n",
+					"\r\n",
+					"\r\n",
+					"                                    col(\"Address.Building\").alias(\"AddressBuilding\"),\r\n",
+					"\r\n",
+					"                                    col(\"Address.Street\").alias(\"AddressStreet\"),\r\n",
+					"\r\n",
+					"                                    col(\"Address.City\").alias(\"AddressCity\"),\r\n",
+					"\r\n",
+					"                                    col(\"Address.State\").alias(\"AddressState\"),\r\n",
+					"\r\n",
+					"                                    col(\"Address.PostCode\").alias(\"AddressPostalCode\")\r\n",
+					"\r\n",
+					"                               )\r\n",
+					"\r\n",
+					"                )"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"CREATE DATABASE IF NOT EXISTS FhvWarehouse"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"(\r\n",
+					"\r\n",
+					"    fhvBasesFlatDF\r\n",
+					"\r\n",
+					"        .write        \r\n",
+					"\r\n",
+					"        .mode(\"overwrite\")\r\n",
+					"\r\n",
+					"        .option(\"path\", \"abfss://projectdatalakestoragefilesystem@dssadmin.dfs.core.windows.net/rawfilesdir/FhvBase_Flatten.json\")\r\n",
+					"\r\n",
+					"        .saveAsTable(\"FhvWarehouse.FHVBases\")\r\n",
+					"\r\n",
+					")"
+				],
+				"execution_count": 11
+			}
+		]
+	}
+}

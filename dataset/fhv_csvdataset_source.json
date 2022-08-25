@@ -1,0 +1,61 @@
+{
+	"name": "fhv_csvdataset_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "fhv_transform_csv_linksrvc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Fhavtaxis11.csv",
+				"folderPath": "rawfilesdir",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "hvfhs_license_num",
+				"type": "String"
+			},
+			{
+				"name": "dispatching_base_num",
+				"type": "String"
+			},
+			{
+				"name": "pickup_datetime",
+				"type": "String"
+			},
+			{
+				"name": "dropoff_datetime",
+				"type": "String"
+			},
+			{
+				"name": "PULocationID",
+				"type": "String"
+			},
+			{
+				"name": "DOLocationID",
+				"type": "String"
+			},
+			{
+				"name": "SR_Flag",
+				"type": "String"
+			},
+			{
+				"name": "TotalAmount",
+				"type": "String"
+			},
+			{
+				"name": "TipAmount",
+				"type": "String"
+			}
+		]
+	}
+}

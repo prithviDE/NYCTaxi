@@ -1,0 +1,79 @@
+{
+	"name": "fhv_json_source_lnksrvc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "fhv_transform_csv_linksrvc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "FhvBases.json",
+				"folderPath": "rawfilesdir",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"License Number": {
+					"type": "string"
+				},
+				"Entity Name": {
+					"type": "string"
+				},
+				"Telephone Number": {
+					"type": "integer"
+				},
+				"SHL Endorsed": {
+					"type": "string"
+				},
+				"Address": {
+					"type": "object",
+					"properties": {
+						"Building": {
+							"type": "string"
+						},
+						"Street": {
+							"type": "string"
+						},
+						"City": {
+							"type": "string"
+						},
+						"State": {
+							"type": "string"
+						},
+						"Postcode": {
+							"type": "integer"
+						}
+					}
+				},
+				"GeoLocation": {
+					"type": "object",
+					"properties": {
+						"Latitude": {
+							"type": "number"
+						},
+						"Longitude": {
+							"type": "number"
+						},
+						"Location": {
+							"type": "string"
+						}
+					}
+				},
+				"Type of Base": {
+					"type": "string"
+				},
+				"Date": {
+					"type": "string"
+				},
+				"Time": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

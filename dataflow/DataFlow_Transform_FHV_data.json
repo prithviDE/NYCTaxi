@@ -6,41 +6,52 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "AzureSynapseAnalyticsTable1",
+						"referenceName": "fhv_csvdataset_source",
 						"type": "DatasetReference"
 					},
-					"name": "FHV"
+					"name": "FHVCSVTOPARQUET"
+				},
+				{
+					"dataset": {
+						"referenceName": "fhv_json_source_lnksrvc",
+						"type": "DatasetReference"
+					},
+					"name": "FHVJSONTOPARQUET"
 				}
 			],
 			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
 				"source(output(",
-				"          VendorId as integer,",
-				"          TransactionKey as string,",
-				"          PickupTime as timestamp,",
-				"          DropTime as timestamp,",
-				"          PassangerCount as integer,",
-				"          TripDistance as double,",
-				"          RateCodeId as integer,",
-				"          PickupLocationId as integer,",
-				"          DropLocationId as integer,",
-				"          PaymentTypeId as integer,",
+				"          hvfhs_license_num as string,",
+				"          dispatching_base_num as string,",
+				"          pickup_datetime as timestamp,",
+				"          dropoff_datetime as timestamp,",
+				"          PULocationID as short,",
+				"          DOLocationID as short,",
+				"          SR_Flag as boolean,",
 				"          TotalAmount as double,",
-				"          TipAmount as double,",
-				"          TripYear as string,",
-				"          TripMonth as string,",
-				"          TripDay as string,",
-				"          Fhv_flag as integer,",
-				"          FhvBusinessID as string,",
-				"          Fhv_BaseLicenceId as string",
+				"          TipAmount as double",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     limit: 1000,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table',",
-				"     staged: true) ~> FHV"
+				"     ignoreNoFilesFound: false) ~> FHVCSVTOPARQUET",
+				"source(output(",
+				"          {License Number} as string,",
+				"          {Entity Name} as string,",
+				"          {Telephone Number} as integer,",
+				"          {SHL Endorsed} as string,",
+				"          Address as (Building as string, Street as string, City as string, State as string, Postcode as integer),",
+				"          GeoLocation as (Latitude as double, Longitude as double, Location as string),",
+				"          {Type of Base} as string,",
+				"          Date as string,",
+				"          Time as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> FHVJSONTOPARQUET"
 			]
 		}
 	}
