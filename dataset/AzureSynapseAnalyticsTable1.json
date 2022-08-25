@@ -100,5 +100,6 @@
 			"schema": "Fact",
 			"table": "TripDetails"
 		}
-	}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
 }

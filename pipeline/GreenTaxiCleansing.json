@@ -30,6 +30,8 @@
 		"folder": {
 			"name": "Cleansing"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2022-08-24T23:08:32Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

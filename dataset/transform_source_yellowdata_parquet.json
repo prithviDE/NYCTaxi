@@ -89,5 +89,6 @@
 				"type": "DOUBLE"
 			}
 		]
-	}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
 }

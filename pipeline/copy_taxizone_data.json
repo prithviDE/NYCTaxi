@@ -65,6 +65,8 @@
 		"folder": {
 			"name": "Ingest Data"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2022-08-24T20:38:17Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

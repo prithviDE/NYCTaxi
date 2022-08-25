@@ -59,7 +59,7 @@
 			"name": "Ingest Data"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-08-23T20:46:49Z"
+		"lastPublishTime": "2022-08-24T20:38:13Z"
 	},
 	"type": "Microsoft.Synapse/workspaces/pipelines"
 }

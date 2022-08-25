@@ -37,6 +37,8 @@
 		"folder": {
 			"name": "Transformations"
 		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2022-08-24T23:08:58Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
 }
