@@ -1,0 +1,30 @@
+{
+	"name": "PaymentTypesJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "fhv_transform_csv_linksrvc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "PaymentTypes.json",
+				"folderPath": "rawfilesdir",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"PaymentTypeID": {
+					"type": "integer"
+				},
+				"PaymentType": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
