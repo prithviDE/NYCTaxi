@@ -9,7 +9,7 @@
 						"referenceName": "AzureSynapseAnalyticsTable1",
 						"type": "DatasetReference"
 					},
-					"name": "FHV"
+					"name": "FHVCSV"
 				},
 				{
 					"name": "source1"
@@ -40,10 +40,9 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     limit: 1000,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table',",
-				"     staged: true) ~> FHV",
+				"     staged: true) ~> FHVCSV",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false) ~> source1"
 			]
