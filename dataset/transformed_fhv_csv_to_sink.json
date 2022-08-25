@@ -1,0 +1,20 @@
+{
+	"name": "transformed_fhv_csv_to_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "cleanedyellowdatalinkservc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "TransformedData/FHVData",
+				"fileSystem": "projectdatalakestoragefilesystem"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
