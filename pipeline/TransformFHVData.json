@@ -19,6 +19,13 @@
 						"referenceName": "DataFlow_Transform_FHV_data",
 						"type": "DataFlowReference"
 					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "projectdatalakestoragelinkedservice",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "projectdatalakestoragefilesystem/TransformedData/FHVData"
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
