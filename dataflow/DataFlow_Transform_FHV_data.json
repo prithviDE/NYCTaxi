@@ -1,0 +1,47 @@
+{
+	"name": "DataFlow_Transform_FHV_data",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					},
+					"name": "FHV"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          VendorId as integer,",
+				"          TransactionKey as string,",
+				"          PickupTime as timestamp,",
+				"          DropTime as timestamp,",
+				"          PassangerCount as integer,",
+				"          TripDistance as double,",
+				"          RateCodeId as integer,",
+				"          PickupLocationId as integer,",
+				"          DropLocationId as integer,",
+				"          PaymentTypeId as integer,",
+				"          TotalAmount as double,",
+				"          TipAmount as double,",
+				"          TripYear as string,",
+				"          TripMonth as string,",
+				"          TripDay as string,",
+				"          Fhv_flag as integer,",
+				"          FhvBusinessID as string,",
+				"          Fhv_BaseLicenceId as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 1000,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     staged: true) ~> FHV"
+			]
+		}
+	}
+}
