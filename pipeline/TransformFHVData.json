@@ -20,10 +20,6 @@
 						"type": "DataFlowReference"
 					},
 					"staging": {
-						"linkedService": {
-							"referenceName": "projectdatalakestoragelinkedservice",
-							"type": "LinkedServiceReference"
-						},
 						"folderPath": "projectdatalakestoragefilesystem/TransformedData/FHVData"
 					},
 					"compute": {
